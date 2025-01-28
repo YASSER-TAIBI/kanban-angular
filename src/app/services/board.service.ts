@@ -153,4 +153,25 @@ export class BoardService {
       }))
     );
   }
+
+  updateCard(cardId: string, title: string, description: string) {
+    this.boards.update(boards =>
+      boards.map(board => ({
+        ...board,
+        lists: board.lists.map(list => ({
+          ...list,
+          cards: list.cards.map(card => {
+            if (card.id === cardId) {
+              return {
+                ...card,
+                title,
+                description
+              };
+            }
+            return card;
+          })
+        }))
+      }))
+    );
+  }
 }

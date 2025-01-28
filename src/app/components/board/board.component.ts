@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BoardService } from '../../services/board.service';
 import { ListComponent } from '../list/list.component';
+import { ModalService } from '../../services/modal.service';
+import { ListModalComponent } from '../../modals/list-modal/list-modal.component';
 
 @Component({
   selector: 'app-board',
@@ -10,23 +12,23 @@ import { ListComponent } from '../list/list.component';
   template: `
     <div class="boards-container">
       @for (board of boards(); track board.id) {
-        <div class="board card-shadow">
+        <div class="board">
           <div class="board-header">
-            <h1>{{ board.title }}</h1>
+            <h2>{{ board.title }}</h2>
             <div class="board-actions">
-              <button class="add-list-btn success" (click)="addList(board.id)">
-                + Nouvelle Liste
+              <button class="btn btn-success" (click)="addList(board.id)">
+                <i class="fas fa-plus"></i> Nouvelle Liste
               </button>
-              <button class="delete-btn danger" (click)="deleteBoard(board.id)">
-                Supprimer
+              <button class="btn btn-danger" (click)="deleteBoard(board.id)">
+                <i class="fas fa-trash"></i>
               </button>
             </div>
           </div>
           <div class="lists-container">
             <app-list *ngFor="let list of board.lists" [list]="list"></app-list>
             <div class="add-list-placeholder">
-              <button class="add-list-btn outline" (click)="addList(board.id)">
-                + Ajouter une liste
+              <button class="btn btn-outline" (click)="addList(board.id)">
+                <i class="fas fa-plus"></i> Ajouter une liste
               </button>
             </div>
           </div>
@@ -39,15 +41,15 @@ import { ListComponent } from '../list/list.component';
       padding: 2rem;
       height: calc(100vh - 56px);
       overflow-y: auto;
-      background-color: var(--background-color);
+      background-color: #f0f2f5;
     }
 
     .board {
-      margin-bottom: 2rem;
       background-color: white;
       border-radius: 8px;
-      border: 1px solid var(--border-color);
       padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
     }
 
     .board-header {
@@ -56,54 +58,27 @@ import { ListComponent } from '../list/list.component';
       align-items: center;
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
-      border-bottom: 2px solid var(--border-color);
+      border-bottom: 1px solid #e0e0e0;
     }
 
-    .board-header h1 {
+    .board-header h2 {
       margin: 0;
       font-size: 1.5rem;
-      color: var(--text-color);
+      color: #172b4d;
+      font-weight: 600;
     }
 
     .board-actions {
       display: flex;
-      gap: 1rem;
-    }
-
-    .delete-btn {
-      background-color: var(--danger-color);
-      color: white;
-    }
-
-    .delete-btn:hover {
-      background-color: #CF513D;
-    }
-
-    .success {
-      background-color: var(--success-color);
-      color: white;
-    }
-
-    .success:hover {
-      background-color: #4C9A3A;
-    }
-
-    .outline {
-      background-color: transparent;
-      border: 2px dashed var(--border-color);
-      color: var(--text-color);
-    }
-
-    .outline:hover {
-      background-color: var(--hover-color);
+      gap: 0.75rem;
     }
 
     .lists-container {
       display: flex;
-      align-items: flex-start;
+      gap: 1rem;
       overflow-x: auto;
       padding-bottom: 1rem;
-      gap: 1rem;
+      min-height: 100px;
     }
 
     .add-list-placeholder {
@@ -111,24 +86,86 @@ import { ListComponent } from '../list/list.component';
       padding: 0.5rem;
     }
 
-    .add-list-btn {
-      width: 100%;
-      padding: 0.8rem;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
       border-radius: 3px;
       font-weight: 500;
+      cursor: pointer;
       transition: all 0.2s ease;
+    }
+
+    .btn i {
+      font-size: 0.875rem;
+    }
+
+    .btn-success {
+      background-color: #5aac44;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #519839;
+    }
+
+    .btn-danger {
+      background-color: #eb5a46;
+      color: white;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .btn-danger:hover {
+      background-color: #cf513d;
+    }
+
+    .btn-outline {
+      background-color: #091e420a;
+      color: #172b4d;
+      width: 100%;
+      justify-content: center;
+      border: 1px dashed #091e4221;
+    }
+
+    .btn-outline:hover {
+      background-color: #091e4214;
+    }
+
+    ::-webkit-scrollbar {
+      height: 12px;
+      width: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 20px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 20px;
+      border: 3px solid #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
     }
   `]
 })
 export class BoardComponent {
   boards = this.boardService.getBoards();
 
-  constructor(private boardService: BoardService) {}
+  constructor(
+    private boardService: BoardService,
+    private modalService: ModalService
+  ) {}
 
-  addList(boardId: string) {
-    const title = prompt('Nom de la liste :');
-    if (title) {
-      this.boardService.addList(boardId, title);
+  async addList(boardId: string) {
+    const result = await this.modalService.open(ListModalComponent);
+    if (result) {
+      this.boardService.addList(boardId, result);
     }
   }
 

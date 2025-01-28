@@ -1,76 +1,113 @@
-/* Variables CSS */
+/* Variables globales */
 :root {
-  --primary-color: #026AA7;
-  --secondary-color: #0079BF;
-  --background-color: #F4F5F7;
-  --text-color: #172B4D;
-  --border-color: #DFE1E6;
-  --shadow-color: rgba(9, 30, 66, 0.25);
+  --primary-color: #0079bf;
+  --secondary-color: #026aa7;
+  --success-color: #5aac44;
+  --danger-color: #eb5a46;
+  --warning-color: #f2d600;
+  --info-color: #00c2e0;
+  --background-color: #f0f2f5;
+  --border-color: #dfe1e6;
+  --text-color: #172b4d;
+  --shadow-color: rgba(9, 30, 66, 0.13);
   --hover-color: rgba(9, 30, 66, 0.08);
-  --success-color: #5AAC44;
-  --danger-color: #EB5A46;
 }
 
-/* Reset */
+/* Reset CSS */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base styles */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.5;
-  color: var(--text-color);
-  background-color: var(--background-color);
+  line-height: 1.6;
+  color: #172b4d;
+  background-color: #f0f2f5;
 }
 
-/* Typography */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.25;
-  margin-bottom: 0.5rem;
-}
-
-/* Buttons */
+/* Styles des boutons */
 button {
+  border: none;
+  background: none;
+  cursor: pointer;
   font-family: inherit;
   font-size: inherit;
-  padding: 0.5rem 1rem;
-  border-radius: 3px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-/* Scrollbar styles */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.success:hover {
+  background-color: #519839;
+}
+
+.danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.danger:hover {
+  background-color: #CF513D;
+}
+
+.outline {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.outline:hover {
+  background: var(--hover-color);
+}
+
+/* Styles des formulaires */
+input, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: 2px solid var(--border-color);
+  border-radius: 3px;
+  width: 100%;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Styles de la barre de défilement */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  background: #f1f1f1;
+  border-radius: 20px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
+  background: #c1c1c1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: #a8a8a8;
 }
 
-/* Utility classes */
+/* Utilitaires */
 .hidden {
   display: none !important;
-}
-
-.card-shadow {
-  box-shadow: 0 1px 3px var(--shadow-color);
 }
 
 .hover-effect {
@@ -80,4 +117,159 @@ button {
 .hover-effect:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+/* Styles des modales */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  position: relative;
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Styles des cartes */
+.card {
+  background: white;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card:hover {
+  background-color: #f8f9fa;
+}
+
+.card-shadow {
+  box-shadow: 0 1px 3px var(--shadow-color);
+  transition: box-shadow 0.2s ease;
+}
+
+.card-shadow:hover {
+  box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+/* Styles des listes */
+.list {
+  background-color: #ebecf0;
+  border-radius: 3px;
+  padding: 0.5rem;
+  min-width: 272px;
+  max-width: 272px;
+  margin-right: 1rem;
+  height: fit-content;
+}
+
+/* Container styles */
+.app-container {
+  min-height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Drag and drop styles */
+.dragging {
+  opacity: 0.5;
+}
+
+.drag-over {
+  background-color: var(--hover-color);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+
+/* Form styles */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+/* Modal styles */
+.modal-header {
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.modal-body {
+  margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.modal-footer button {
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-footer .cancel-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+}
+
+.modal-footer .cancel-btn:hover {
+  background: var(--hover-color);
+}
+
+.modal-footer .confirm-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.modal-footer .confirm-btn:hover {
+  background: var(--secondary-color);
+}
+
+.modal-footer button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

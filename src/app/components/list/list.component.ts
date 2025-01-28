@@ -3,6 +3,8 @@ import { List } from '../../models/list.model';
 import { CommonModule } from '@angular/common';
 import { CardComponent } from '../card/card.component';
 import { BoardService } from '../../services/board.service';
+import { ModalService } from '../../services/modal.service';
+import { CardModalComponent } from '../../modals/card-modal/card-modal.component';
 
 @Component({
   selector: 'app-list',
@@ -132,7 +134,10 @@ import { BoardService } from '../../services/board.service';
 export class ListComponent {
   @Input() list!: List;
 
-  constructor(private boardService: BoardService) {}
+  constructor(
+    private boardService: BoardService,
+    private modalService: ModalService
+  ) {}
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -149,15 +154,14 @@ export class ListComponent {
     }
   }
 
-  addCard() {
-    const title = prompt('Titre de la carte :');
-    const description = prompt('Description de la carte :');
-    if (title && description) {
-      this.boardService.addCard(this.list.id, title, description);
+  async addCard() {
+    const result = await this.modalService.open(CardModalComponent);
+    if (result) {
+      this.boardService.addCard(this.list.id, result.title, result.description);
     }
   }
 
-  deleteList() {
+  async deleteList() {
     if (confirm('Voulez-vous supprimer cette liste ?')) {
       this.boardService.deleteList(this.list.id);
     }

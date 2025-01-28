@@ -2,6 +2,8 @@ import { Component, Input } from '@angular/core';
 import { Card } from '../../models/card.model';
 import { CommonModule } from '@angular/common';
 import { BoardService } from '../../services/board.service';
+import { ModalService } from '../../services/modal.service';
+import { CardModalComponent } from '../../modals/card-modal/card-modal.component';
 
 @Component({
   selector: 'app-card',
@@ -113,7 +115,10 @@ import { BoardService } from '../../services/board.service';
 export class CardComponent {
   @Input() card!: Card;
 
-  constructor(private boardService: BoardService) {}
+  constructor(
+    private boardService: BoardService,
+    private modalService: ModalService
+  ) {}
 
   onDragStart(event: DragEvent) {
     if (event.dataTransfer) {
@@ -122,20 +127,21 @@ export class CardComponent {
     }
   }
 
-  deleteCard(event: Event) {
+  async deleteCard(event: Event) {
     event.stopPropagation();
     if (confirm('Voulez-vous supprimer cette carte ?')) {
       this.boardService.deleteCard(this.card.id);
     }
   }
 
-  editCard() {
-    const newTitle = prompt('Modifier le titre :', this.card.title);
-    const newDescription = prompt('Modifier la description :', this.card.description);
+  async editCard() {
+    const result = await this.modalService.open(CardModalComponent, {
+      card: this.card
+    });
     
-    if (newTitle && newDescription) {
-      // Note: We would typically update the card here, but for simplicity
-      // we're not implementing the full edit functionality in this demo
+    if (result) {
+      // Note: We need to add an updateCard method to the BoardService
+      this.boardService.updateCard(this.card.id, result.title, result.description);
     }
   }
 }
