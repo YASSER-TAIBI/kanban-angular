@@ -10,16 +10,25 @@ import { ListComponent } from '../list/list.component';
   template: `
     <div class="boards-container">
       @for (board of boards(); track board.id) {
-        <div class="board">
+        <div class="board card-shadow">
           <div class="board-header">
             <h1>{{ board.title }}</h1>
-            <button class="delete-btn" (click)="deleteBoard(board.id)">Supprimer le tableau</button>
+            <div class="board-actions">
+              <button class="add-list-btn success" (click)="addList(board.id)">
+                + Nouvelle Liste
+              </button>
+              <button class="delete-btn danger" (click)="deleteBoard(board.id)">
+                Supprimer
+              </button>
+            </div>
           </div>
           <div class="lists-container">
             <app-list *ngFor="let list of board.lists" [list]="list"></app-list>
-            <button class="add-list-btn" (click)="addList(board.id)">
-              + Ajouter une liste
-            </button>
+            <div class="add-list-placeholder">
+              <button class="add-list-btn outline" (click)="addList(board.id)">
+                + Ajouter une liste
+              </button>
+            </div>
           </div>
         </div>
       }
@@ -29,37 +38,64 @@ import { ListComponent } from '../list/list.component';
     .boards-container {
       padding: 2rem;
       height: calc(100vh - 56px);
-      overflow-x: auto;
+      overflow-y: auto;
+      background-color: var(--background-color);
     }
 
     .board {
       margin-bottom: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
     }
 
     .board-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
     }
 
     .board-header h1 {
       margin: 0;
       font-size: 1.5rem;
-      color: #172b4d;
+      color: var(--text-color);
+    }
+
+    .board-actions {
+      display: flex;
+      gap: 1rem;
     }
 
     .delete-btn {
-      padding: 0.5rem 1rem;
-      background-color: #eb5a46;
+      background-color: var(--danger-color);
       color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
     }
 
     .delete-btn:hover {
-      background-color: #cf513d;
+      background-color: #CF513D;
+    }
+
+    .success {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .success:hover {
+      background-color: #4C9A3A;
+    }
+
+    .outline {
+      background-color: transparent;
+      border: 2px dashed var(--border-color);
+      color: var(--text-color);
+    }
+
+    .outline:hover {
+      background-color: var(--hover-color);
     }
 
     .lists-container {
@@ -67,22 +103,20 @@ import { ListComponent } from '../list/list.component';
       align-items: flex-start;
       overflow-x: auto;
       padding-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .add-list-placeholder {
+      min-width: 272px;
+      padding: 0.5rem;
     }
 
     .add-list-btn {
-      min-width: 272px;
-      padding: 0.5rem;
-      background: rgba(255, 255, 255, 0.24);
-      border: none;
+      width: 100%;
+      padding: 0.8rem;
       border-radius: 3px;
-      color: white;
-      cursor: pointer;
-      margin-left: 0.5rem;
-      height: fit-content;
-    }
-
-    .add-list-btn:hover {
-      background: rgba(255, 255, 255, 0.32);
+      font-weight: 500;
+      transition: all 0.2s ease;
     }
   `]
 })

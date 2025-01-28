@@ -1,14 +1,47 @@
-/* Global styles */
+/* Variables CSS */
+:root {
+  --primary-color: #026AA7;
+  --secondary-color: #0079BF;
+  --background-color: #F4F5F7;
+  --text-color: #172B4D;
+  --border-color: #DFE1E6;
+  --shadow-color: rgba(9, 30, 66, 0.25);
+  --hover-color: rgba(9, 30, 66, 0.08);
+  --success-color: #5AAC44;
+  --danger-color: #EB5A46;
+}
+
+/* Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+/* Base styles */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.5;
-  color: #172b4d;
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 /* Scrollbar styles */
@@ -36,8 +69,15 @@ body {
   display: none !important;
 }
 
-/* Button reset */
-button {
-  font-family: inherit;
-  font-size: inherit;
+.card-shadow {
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.hover-effect {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-effect:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px var(--shadow-color);
 }
