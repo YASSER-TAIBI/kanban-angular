@@ -1,7 +1,10 @@
+import { CardType } from './card-type.model';
+
 export interface Card {
   id: string;
   title: string;
   description: string;
-  listId: string;
-  position: number;
+  type: CardType;
+  listId?: string;
+  position?: number;
 }

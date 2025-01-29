@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { Card } from '../../models/card.model';
 import { CommonModule } from '@angular/common';
 import { BoardService } from '../../services/board.service';
-import { ModalService } from '../../services/modal.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CardModalComponent } from '../../modals/card-modal/card-modal.component';
 
 @Component({
@@ -16,6 +16,9 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
          (click)="editCard()">
       <div class="card-header">
         <h3>{{ card.title }}</h3>
+        <div class="card-type" [class.bug]="card.type === 'Bug'" [class.evolution]="card.type === 'Evolution'">
+          {{ card.type }}
+        </div>
         <button class="delete-btn" (click)="deleteCard($event)">×</button>
       </div>
       <p class="card-description">{{ card.description }}</p>
@@ -51,6 +54,7 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 0.5rem;
+      gap: 0.5rem;
     }
 
     .card-header h3 {
@@ -60,7 +64,25 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
       color: var(--text-color);
       word-break: break-word;
       flex: 1;
-      padding-right: 0.5rem;
+    }
+
+    .card-type {
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .card-type.bug {
+      background-color: #ffebe6;
+      color: #de350b;
+    }
+
+    .card-type.evolution {
+      background-color: #deebff;
+      color: #0747a6;
     }
 
     .delete-btn {
@@ -73,6 +95,7 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
       border-radius: 3px;
       transition: all 0.2s ease;
       opacity: 0;
+      flex-shrink: 0;
     }
 
     .card:hover .delete-btn {
@@ -108,7 +131,7 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
     }
 
     .card:hover .edit-hint {
-      opacity: 0.8;
+      opacity: 1;
     }
   `]
 })
@@ -117,31 +140,31 @@ export class CardComponent {
 
   constructor(
     private boardService: BoardService,
-    private modalService: ModalService
+    private modalService: NgbModal
   ) {}
 
   onDragStart(event: DragEvent) {
     if (event.dataTransfer) {
-      event.dataTransfer.setData('cardId', this.card.id);
-      event.dataTransfer.setData('listId', this.card.listId);
-    }
-  }
-
-  async deleteCard(event: Event) {
-    event.stopPropagation();
-    if (confirm('Voulez-vous supprimer cette carte ?')) {
-      this.boardService.deleteCard(this.card.id);
+      event.dataTransfer.setData('text/plain', JSON.stringify(this.card));
+      const element = event.target as HTMLElement;
+      element.classList.add('dragging');
     }
   }
 
   async editCard() {
-    const result = await this.modalService.open(CardModalComponent, {
-      card: this.card
-    });
-    
-    if (result) {
-      // Note: We need to add an updateCard method to the BoardService
-      this.boardService.updateCard(this.card.id, result.title, result.description);
+    const modalRef = this.modalService.open(CardModalComponent);
+    modalRef.componentInstance.card = this.card;
+    modalRef.result.then((result) => {
+      if (result) {
+        this.boardService.updateCard(this.card.id, result);
+      }
+    }, () => {});
+  }
+
+  deleteCard(event: Event) {
+    event.stopPropagation();
+    if (confirm('Voulez-vous supprimer cette carte ?')) {
+      this.boardService.deleteCard(this.card.id);
     }
   }
 }
