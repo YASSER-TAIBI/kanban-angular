@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { BoardService } from '../../services/board.service';
 import { CommonModule } from '@angular/common';
-import { ModalService } from '../../services/modal.service';
+import { BoardService } from '../../services/board.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BoardModalComponent } from '../../modals/board-modal/board-modal.component';
 
 @Component({
@@ -11,65 +11,80 @@ import { BoardModalComponent } from '../../modals/board-modal/board-modal.compon
   template: `
     <nav class="navbar">
       <div class="navbar-brand">
-        <h1>Kanban Board</h1>
+        <img src="assets/logo.png" alt="Logo" class="logo" />
+        <span class="brand-name">Kanban Board</span>
       </div>
-      <div class="navbar-menu">
-        <button class="add-board-btn" (click)="addNewBoard()">
-          <i class="fas fa-plus"></i> Nouveau Tableau
+      <div class="navbar-actions">
+        <button class="new-board-btn" (click)="createBoard()">
+          <i class="plus-icon">+</i>
+          Nouveau tableau
         </button>
       </div>
     </nav>
   `,
   styles: [`
     .navbar {
-      background-color: #0079bf;
+      background: white;
       padding: 0.5rem 2rem;
-      color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .navbar-brand h1 {
-      margin: 0;
-      font-size: 1.5rem;
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      height: 32px;
+      width: auto;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
       font-weight: 600;
+      color: var(--text-color);
     }
 
-    .add-board-btn {
-      background-color: rgba(255, 255, 255, 0.3);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 3px;
-      cursor: pointer;
-      font-weight: 500;
+    .new-board-btn {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      transition: background-color 0.2s ease;
+      padding: 0.5rem 1rem;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .add-board-btn:hover {
-      background-color: rgba(255, 255, 255, 0.4);
+    .new-board-btn:hover {
+      background: var(--primary-dark);
     }
 
-    .add-board-btn i {
-      font-size: 0.875rem;
+    .plus-icon {
+      font-size: 1.2rem;
+      font-style: normal;
     }
   `]
 })
 export class NavbarComponent {
   constructor(
     private boardService: BoardService,
-    private modalService: ModalService
+    private modalService: NgbModal
   ) {}
 
-  async addNewBoard() {
-    const result = await this.modalService.open(BoardModalComponent);
-    if (result) {
-      this.boardService.addBoard(result);
-    }
+  async createBoard() {
+    const modalRef = this.modalService.open(BoardModalComponent);
+    modalRef.result.then((title) => {
+      if (title) {
+        this.boardService.addBoard(title);
+      }
+    }, () => {});
   }
 }

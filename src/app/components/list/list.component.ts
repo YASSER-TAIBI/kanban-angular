@@ -3,7 +3,7 @@ import { List } from '../../models/list.model';
 import { CommonModule } from '@angular/common';
 import { CardComponent } from '../card/card.component';
 import { BoardService } from '../../services/board.service';
-import { ModalService } from '../../services/modal.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CardModalComponent } from '../../modals/card-modal/card-modal.component';
 
 @Component({
@@ -99,18 +99,17 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
     }
 
     .add-card-btn {
-      width: 100%;
-      padding: 0.8rem;
-      margin-top: 0.5rem;
-      background: none;
-      border: none;
-      color: #5E6C84;
-      cursor: pointer;
-      text-align: left;
-      border-radius: 3px;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      margin-top: 0.5rem;
+      border: none;
+      border-radius: 3px;
+      background-color: transparent;
+      color: #6B778C;
+      cursor: pointer;
       transition: all 0.2s ease;
     }
 
@@ -121,13 +120,24 @@ import { CardModalComponent } from '../../modals/card-modal/card-modal.component
 
     .plus-icon {
       font-size: 1.2rem;
-      font-weight: bold;
+      font-style: normal;
     }
 
-    /* Style pour l'état de drag & drop */
-    .list.drag-over {
-      background-color: var(--background-color);
-      border: 2px dashed var(--primary-color);
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #D4D4D4;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A3A3A3;
     }
   `]
 })
@@ -136,34 +146,51 @@ export class ListComponent {
 
   constructor(
     private boardService: BoardService,
-    private modalService: ModalService
+    private modalService: NgbModal
   ) {}
+
+  async addCard() {
+    const modalRef = this.modalService.open(CardModalComponent);
+    modalRef.result.then((result) => {
+      if (result) {
+        this.boardService.addCard(this.list.id, result);
+      }
+    }, () => {});
+  }
+
+  deleteList() {
+    if (confirm('Voulez-vous supprimer cette liste ?')) {
+      this.boardService.deleteList(this.list.id);
+    }
+  }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
+    const element = event.currentTarget as HTMLElement;
+    element.classList.add('drag-over');
   }
 
   onDrop(event: DragEvent) {
     event.preventDefault();
-    if (event.dataTransfer) {
-      const cardId = event.dataTransfer.getData('cardId');
-      const fromListId = event.dataTransfer.getData('listId');
-      if (fromListId !== this.list.id) {
-        this.boardService.moveCard(cardId, fromListId, this.list.id);
-      }
-    }
-  }
+    const element = event.currentTarget as HTMLElement;
+    element.classList.remove('drag-over');
 
-  async addCard() {
-    const result = await this.modalService.open(CardModalComponent);
-    if (result) {
-      this.boardService.addCard(this.list.id, result.title, result.description);
-    }
-  }
+    const cardData = event.dataTransfer?.getData('text/plain');
+    if (cardData) {
+      const card = JSON.parse(cardData);
+      const cardElements = element.querySelectorAll('.card');
+      let targetPosition = this.list.cards.length;
 
-  async deleteList() {
-    if (confirm('Voulez-vous supprimer cette liste ?')) {
-      this.boardService.deleteList(this.list.id);
+      // Calculate drop position
+      const mouseY = event.clientY;
+      cardElements.forEach((cardElement, index) => {
+        const rect = cardElement.getBoundingClientRect();
+        if (mouseY < rect.top + rect.height / 2) {
+          targetPosition = Math.min(targetPosition, index);
+        }
+      });
+
+      this.boardService.moveCard(card.id, this.list.id, targetPosition);
     }
   }
 }
